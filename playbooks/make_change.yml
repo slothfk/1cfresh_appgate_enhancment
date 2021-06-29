@@ -1,0 +1,71 @@
+---
+- hosts: agw
+  become: yes
+  vars:
+    appgate_home: '/var/lib/appgate'   # package value /home/appgate
+    appgate_shell: '/bin/false'        # package value /bin/sh
+    read_timeout: '300000'             # package value 75000
+
+  tasks:
+  - name: Create new appgate home directory
+    file:
+      path: '{{ appgate_home }}'
+      state: 'directory'
+      owner: 'appgate'
+      group: 'grpappgate'
+      mode: 0700
+
+  - name: Modify appgate user property
+    user:
+      name: appgate
+      shell: '/bin/false'
+      home: '{{ appgate_home }}'
+
+  - name: Create new config directory
+    file:
+      path: '{{ appgate_home }}/conf'
+      state: 'directory'
+      owner: 'appgate'
+      group: 'grpappgate'
+
+  - name: Copy new logback.xml
+    copy:
+      src: 'logback.xml'
+      dest: '{{ appgate_home }}/conf/'
+      owner: 'appgate'
+      group: 'grpappgate'
+
+  - name: Copy new appgatesettings.xml
+    template:
+      src: 'appgatesettings.xml.j2'
+      dest: '{{ appgate_home }}/conf/appgatesettings.xml'
+      owner: 'appgate' 
+      group: 'grpappgate'
+
+  - name: Create new data directory
+    file:
+      path: '{{ appgate_home }}/data'
+      state: 'directory'
+      owner: 'appgate'
+      group: 'grpappgate'
+
+  - name: Stop old appgate service
+    service:
+      name: 'appgate'
+      state: 'stopped'
+
+  - name: Copy systemd service file
+    copy:
+      src: 'appgate.service'
+      dest: '/etc/systemd/system'
+
+  - name: Copy defauls appgate service environment
+    template:
+      src: 'appgate.default.j2'
+      dest: '/etc/default/appgate'
+
+  - name: Start new appgate service
+    service:
+      name: 'appgate'
+      state: 'started'
+      enabled: 'yes'

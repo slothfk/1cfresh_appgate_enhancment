@@ -1,0 +1,70 @@
+<configuration scan="true" scanPeriod="5 seconds">
+
+    <variable name="logsPath" value="/var/log/appgate/" />
+    <variable name="errorFileName" value="error.log" />
+    <variable name="infoFileName" value="info.log" />
+    <variable name="archivePattern" value="%d{yyMMddHH}" />
+    <variable name="msgPattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+
+    <appender name="INF" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logsPath}${infoFileName}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logsPath}${infoFileName}${archivePattern}.gz</fileNamePattern>
+            <maxHistory>168</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>${msgPattern}</pattern>
+        </encoder>
+    </appender>
+    <appender name="ERR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logsPath}${errorFileName}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logsPath}${errorFileName}${archivePattern}.gz</fileNamePattern>
+            <maxHistory>168</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>${msgPattern}</pattern>
+        </encoder>
+    </appender>
+    <appender name="ASYNCERR" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+		<neverBlock>true</neverBlock>
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="ERR"/>
+    </appender>-->
+    <appender name="ASYNCINF" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+		<neverBlock>true</neverBlock>
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="INF"/>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="ASYNCINF"/>
+        <appender-ref ref="ASYNCERR"/>
+    </root>
+</configuration>

@@ -1,1 +1,10 @@
-# 1cfresh_appgate_enhancment
+# Улучшения шлюза приложений 1cfresh (актуально для 1.1.1.13)
+
+* Отказ от скрипта appgate_wrapper.sh для запуска appgate в пользу systemd service
+* Перенос домашнего каталога пользователя appgate в /var/lib
+* Изменение оболочки пользователя на /bin/false
+* Перенос каталога настроек из /opt/1C/1cfresh/appgate/settings в /var/lib/appgate/conf
+* Перенос каталога данных из /opt/1C/1cfresh/appgate/data в /var/lib/appgate/data
+* Изменение периода ротации журналов appgate до 1 часа
+* Сокращение времени хранения журналов appgate до 7 дней (168 часов)
+* Увеличенный таймаут ожидания ответа веб-сервера (до 300 секунд)
